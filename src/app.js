@@ -6,9 +6,12 @@ function init () {
     Content.createLoader();
 
     //preload assets
-    Content.preloadImage('images/test.gif');
+    Content.preloadImage('images/carrot.png');
+    Content.preloadFilm('images/rat.png', 110, 50, 30, 6);
+    Content.preloadFilm('images/Spazout.png', 110, 50, 60, 8);
 
     Content.loadThenStart(startApp);
+
 }
 
 function startApp () {
