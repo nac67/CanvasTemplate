@@ -1,7 +1,7 @@
 
 var Character = function () {
     this.x = 5;
-    this.y = 5.1;
+    this.y = 3;
     this.width = PLAYER_WIDTH/TILE;
     this.height = PLAYER_HEIGHT/TILE;
     this.vx = 0;

@@ -5,9 +5,9 @@ var AppController = function () {
                 [1,0,0,0,0,0,0,0,0,0,0,1],
                 [1,0,0,0,0,0,0,0,0,0,0,1],
                 [1,0,0,0,1,0,0,0,0,0,0,1],
-                [1,0,0,0,0,0,0,0,0,0,0,1],
+                [1,0,1,1,1,0,0,0,0,0,0,1],
                 [1,0,0,0,0,0,0,1,0,0,0,1],
-                [1,0,0,0,1,1,1,1,0,0,1,1],
+                [1,0,1,0,1,1,1,1,0,0,1,1],
                 [1,1,1,1,1,1,1,1,1,1,1,1]];
 
     this.player = new Character();
@@ -22,33 +22,6 @@ AppController.prototype.isWall = function(cellX,cellY) {
     }
 }
 
-//checks if (x,y) is inside a world cell,
-// includeTop determines if the y position is sitting
-// exactly where the top of a cell is, whether to include
-// that in the collision. This is important if you want
-// to make something move left and right, you don't want
-// to include the top because then the player will think his
-// feet are hitting a wall, when they're just touching the ground.
-// likewise, we need to register a collision for determining if 
-// the player is grounded.
-AppController.prototype.inCell = function(x, y, includeLeft, includeTop) {
-    if (includeTop === undefined) { 
-        includeTop = true;
-    }
-    var inTileX = x % 1;
-    var inTileY = y % 1;
-    var tileX = Math.floor(x);
-    var tileY = Math.floor(y);
-    try {
-        var occupied = this.map[tileY][tileX] === 1;
-
-
-
-        return occupied && (includeTop || y != tileY) && (includeLeft || x != tileX);
-    } catch (e) {
-        return false;
-    }
-}
 
 AppController.prototype.inCellTrimTopBottom = function(x, y) {
     var inTileX = x % 1;
@@ -112,23 +85,30 @@ AppController.prototype.update = function () {
         }
     }
 
-
-    var blah = .3
-    if (Key.isDown(Key.UP)) {
-        this.player.vy = -blah;
-    } else if (Key.isDown(Key.DOWN)) {
-        this.player.vy = blah;
+    if(!this.player.touchBottom) {
+        this.player.vy += PLAYER_YACCEL;
     } else {
-        this.player.vy = 0;
+        if (Key.isDown(Key.UP)) {
+            this.player.vy = -PLAYER_JUMP;
+        }
     }
 
-    if (Key.isDown(Key.LEFT)) {
-        this.player.vx = -blah;
-    } else if (Key.isDown(Key.RIGHT)) {
-        this.player.vx = blah;
-    } else {
-        this.player.vx = 0;
-    }
+    // var blah = .3
+    // if (Key.isDown(Key.UP)) {
+    //     this.player.vy = -blah;
+    // } else if (Key.isDown(Key.DOWN)) {
+    //     this.player.vy = blah;
+    // } else {
+    //     this.player.vy = 0;
+    // }
+
+    // if (Key.isDown(Key.LEFT)) {
+    //     this.player.vx = -blah;
+    // } else if (Key.isDown(Key.RIGHT)) {
+    //     this.player.vx = blah;
+    // } else {
+    //     this.player.vx = 0;
+    // }
 
     //this.player.setBottom(Math.floor(6.3));
 
@@ -136,8 +116,8 @@ AppController.prototype.update = function () {
     if (this.player.vx > 0) {
         var potX = this.player.right() + this.player.vx; //potentialX
 
-        var wouldHitWall = this.inCell(potX, this.player.top(), true, false) || 
-                        this.inCell(potX, this.player.bottom(), true, false)
+        var wouldHitWall = this.inCellTrimTopBottom(potX, this.player.top()) || 
+                        this.inCellTrimTopBottom(potX, this.player.bottom())
         if (!wouldHitWall) {
             this.player.setRight(potX);
         } else {
@@ -149,8 +129,8 @@ AppController.prototype.update = function () {
     if (this.player.vx < 0) {
         var potX = this.player.left() + this.player.vx; //potentialX
 
-        var wouldHitWall = this.inCell(potX, this.player.top(), false, false) || 
-                        this.inCell(potX, this.player.bottom(), false, false)
+        var wouldHitWall = this.inCellTrimTopBottom(potX, this.player.top()) || 
+                        this.inCellTrimTopBottom(potX, this.player.bottom())
         if (!wouldHitWall) {
             this.player.setLeft(potX);
         } else {
@@ -161,12 +141,11 @@ AppController.prototype.update = function () {
     if (this.player.vy > 0) {
         var potY = this.player.bottom() + this.player.vy; //potentialX
 
-        var wouldHitWall = this.inCell(this.player.left(), potY, false, true) || 
-                        this.inCell(this.player.right(), potY, false, true)
+        var wouldHitWall = this.inCellTrimLeftRight(this.player.left(), potY) || 
+                        this.inCellTrimLeftRight(this.player.right(), potY)
         if (!wouldHitWall) {
             this.player.setBottom(potY);
         } else {
-            //TODO if i'm dipped in the ground, this will cause me to scoot left!
             this.player.setBottom(Math.floor(potY));
             this.player.vy = 0;
         }
@@ -174,14 +153,15 @@ AppController.prototype.update = function () {
     if (this.player.vy < 0) {
         var potY = this.player.top() + this.player.vy; //potentialX
 
-        var wouldHitWall = this.inCell(this.player.left(), potY, false, false) || 
-                        this.inCell(this.player.right(), potY, false, false)
+        var wouldHitWall = this.inCellTrimLeftRight(this.player.left(), potY) || 
+                        this.inCellTrimLeftRight(this.player.right(), potY)
         if (!wouldHitWall) {
             this.player.setTop(potY);
         } else {
-            //TODO if i'm dipped in the ground, this will cause me to scoot left!
             this.player.setTop(Math.floor(potY)+1);
-            this.player.vy = 0;
+            if (PLAYER_HEAD_BUMP_BOUNCE) {
+                this.player.vy = 0;
+            }
         }
     }
 
