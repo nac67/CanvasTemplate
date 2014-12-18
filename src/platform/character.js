@@ -9,8 +9,8 @@ var Character = function () {
 
     this.touchLeft = false;
     this.touchRight = false;
-    this.touchDown = false;
-    this.touchUp = false;
+    this.touchTop = false;
+    this.touchBottom = false;
 }
 
 Character.prototype.left = function () {
@@ -47,10 +47,10 @@ Character.prototype.setBottom = function (y) {
 
 Character.prototype.draw = function () {
     Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE, this.height*TILE, "#238341");
-    if (this.touchUp) {
+    if (this.touchTop) {
         Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE, this.height*TILE/5, "#c61236");
     }
-    if (this.touchDown) {
+    if (this.touchBottom) {
         Utils.drawRect(this.x * TILE, this.y * TILE+ this.height*TILE*(4/5), this.width*TILE, this.height*TILE/5, "#c61236");
     }
     if (this.touchLeft) {
