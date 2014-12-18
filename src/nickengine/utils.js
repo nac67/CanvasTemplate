@@ -19,6 +19,14 @@ var Utils = {
         return (x>=rx && x<=rx+w && y>=ry && y<=ry+h);
     },
 
+    drawRect: function(x, y, w, h, col) {
+        if (col === undefined) {
+            col = "#000000"
+        }
+        context.fillStyle = col;
+        context.fillRect(x,y,w,h);
+    },
+
     drawEllipse: function(ctx, x, y, w, h) {
       var kappa = .5522848,
           ox = (w / 2) * kappa, // control point offset horizontal

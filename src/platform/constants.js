@@ -1,0 +1,9 @@
+var WIDTH = 640;
+var HEIGHT = 480;
+
+var TILE = 50;
+
+var PLAYER_WIDTH = 20;
+var PLAYER_HEIGHT = 35;
+var PLAYER_CAP_XVEL = .14;
+var PLAYER_XACCEL = .03;
