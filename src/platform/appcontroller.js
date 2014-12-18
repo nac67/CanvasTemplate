@@ -84,6 +84,7 @@ AppController.prototype.update = function () {
     // Collision resolution
     if (this.player.vx > 0) {
         var potX = this.player.right() + this.player.vx; //potentialX
+        this.player.touchLeft = false;
 
         var wouldHitWall = this.inCell(potX, this.player.top(), false) || 
                         this.inCell(potX, this.player.bottom(), false)
@@ -91,18 +92,21 @@ AppController.prototype.update = function () {
             this.player.setRight(potX);
         } else {
             //TODO if i'm dipped in the ground, this will cause me to scoot left!
+            this.player.touchRight = true;
             this.player.setRight(Math.floor(potX));
             this.player.vx = 0;
         }
     }
     if (this.player.vx < 0) {
         var potX = this.player.left() + this.player.vx; //potentialX
+        this.player.touchRight = false;
 
         var wouldHitWall = this.inCell(potX, this.player.top(), false) || 
                         this.inCell(potX, this.player.bottom(), false)
         if (!wouldHitWall) {
             this.player.setLeft(potX);
         } else {
+            this.player.touchLeft = true;
             this.player.setLeft(Math.floor(potX)+1);
             this.player.vx = 0;
         }

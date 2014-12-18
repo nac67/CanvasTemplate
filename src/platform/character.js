@@ -7,10 +7,10 @@ var Character = function () {
     this.vx = 0;
     this.vy = 0;
 
-    this.touchLeft = true;
-    this.touchRight = true;
-    this.touchDown = true;
-    this.touchUp = true;
+    this.touchLeft = false;
+    this.touchRight = false;
+    this.touchDown = false;
+    this.touchUp = false;
 }
 
 Character.prototype.left = function () {
@@ -47,7 +47,16 @@ Character.prototype.setBottom = function (y) {
 
 Character.prototype.draw = function () {
     Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE, this.height*TILE, "#238341");
+    if (this.touchUp) {
+        Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE, this.height*TILE/5, "#c61236");
+    }
+    if (this.touchDown) {
+        Utils.drawRect(this.x * TILE, this.y * TILE+ this.height*TILE*(4/5), this.width*TILE, this.height*TILE/5, "#c61236");
+    }
     if (this.touchLeft) {
-        Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE/10, this.height*TILE, "#238341");
+        Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE/5, this.height*TILE, "#c61236");
+    }
+    if (this.touchRight) {
+        Utils.drawRect(this.x * TILE + this.width*TILE*(4/5), this.y * TILE, this.width*TILE/5, this.height*TILE, "#c61236");
     }
 }
