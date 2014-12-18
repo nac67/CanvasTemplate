@@ -13,6 +13,15 @@ var AppController = function () {
     this.player = new Character();
 }
 
+
+AppController.prototype.isWall = function(cellX,cellY) {
+    try {
+        return this.map[cellY][cellX] === 1;
+    } catch (e) {
+        return false;
+    }
+}
+
 //checks if (x,y) is inside a world cell,
 // includeTop determines if the y position is sitting
 // exactly where the top of a cell is, whether to include
@@ -22,7 +31,7 @@ var AppController = function () {
 // feet are hitting a wall, when they're just touching the ground.
 // likewise, we need to register a collision for determining if 
 // the player is grounded.
-AppController.prototype.inCell = function(x, y, includeTop, includeLeft) {
+AppController.prototype.inCell = function(x, y, includeLeft, includeTop) {
     if (includeTop === undefined) { 
         includeTop = true;
     }
@@ -38,6 +47,40 @@ AppController.prototype.inCell = function(x, y, includeTop, includeLeft) {
         return occupied && (includeTop || y != tileY) && (includeLeft || x != tileX);
     } catch (e) {
         return false;
+    }
+}
+
+AppController.prototype.inCellTrimTopBottom = function(x, y) {
+    var inTileX = x % 1;
+    var inTileY = y % 1;
+    var tileX = Math.floor(x);
+    var tileX2 = Math.floor(x)-1;
+    var tileY = Math.floor(y);
+
+    var occupied = this.isWall(tileX, tileY);
+    var occupied2 = this.isWall(tileX2, tileY);
+
+    if (inTileX === 0) {
+        return (occupied || occupied2) && inTileY !== 0 ;
+    } else {
+        return occupied && inTileY !== 0;
+    }
+}
+
+AppController.prototype.inCellTrimLeftRight = function(x, y) {
+    var inTileX = x % 1;
+    var inTileY = y % 1;
+    var tileX = Math.floor(x);
+    var tileY = Math.floor(y);
+    var tileY2 = Math.floor(y)-1;
+
+    var occupied = this.isWall(tileX, tileY);
+    var occupied2 = this.isWall(tileX, tileY2);
+
+    if (inTileY === 0) {
+        return (occupied || occupied2) && inTileX !== 0 ;
+    } else {
+        return occupied && inTileX !== 0;
     }
 }
 
@@ -93,8 +136,8 @@ AppController.prototype.update = function () {
     if (this.player.vx > 0) {
         var potX = this.player.right() + this.player.vx; //potentialX
 
-        var wouldHitWall = this.inCell(potX, this.player.top(), false, true) || 
-                        this.inCell(potX, this.player.bottom(), false, true)
+        var wouldHitWall = this.inCell(potX, this.player.top(), true, false) || 
+                        this.inCell(potX, this.player.bottom(), true, false)
         if (!wouldHitWall) {
             this.player.setRight(potX);
         } else {
@@ -118,8 +161,8 @@ AppController.prototype.update = function () {
     if (this.player.vy > 0) {
         var potY = this.player.bottom() + this.player.vy; //potentialX
 
-        var wouldHitWall = this.inCell(this.player.left(), potY, true, false) || 
-                        this.inCell(this.player.right(), potY, true, false)
+        var wouldHitWall = this.inCell(this.player.left(), potY, false, true) || 
+                        this.inCell(this.player.right(), potY, false, true)
         if (!wouldHitWall) {
             this.player.setBottom(potY);
         } else {
@@ -141,6 +184,19 @@ AppController.prototype.update = function () {
             this.player.vy = 0;
         }
     }
+
+
+    this.player.touchLeft = this.inCellTrimTopBottom(this.player.left(), this.player.top()) || 
+                this.inCellTrimTopBottom(this.player.left(), this.player.bottom())
+
+    this.player.touchRight = this.inCellTrimTopBottom(this.player.right(), this.player.top()) || 
+                this.inCellTrimTopBottom(this.player.right(), this.player.bottom())
+
+    this.player.touchTop = this.inCellTrimLeftRight(this.player.left(), this.player.top()) || 
+                this.inCellTrimLeftRight(this.player.right(), this.player.top())
+
+    this.player.touchBottom = this.inCellTrimLeftRight(this.player.left(), this.player.bottom()) || 
+                this.inCellTrimLeftRight(this.player.right(), this.player.bottom())
 
 }
 
