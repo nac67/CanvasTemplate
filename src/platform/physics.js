@@ -1,7 +1,14 @@
 var Physics = {
-    headBounce: false
+    // will bounce head on ceiling if true, otherwise will 
+    // slide on ceiling until y velocity is depleted
+    headBounce: false,
+
+    //can hold jump to repeatedly jump
+    autoJump: false, 
 };
 
+/* moves player along isHorizontal axis by accel, and caps his speed at capSpeed
+   player users decBtn and incBtn to decrease/increase position on isHorizontal axis */
 Physics._move = function (isHorizontal, player, decBtn, incBtn, capSpeed, accel) {
     var decPress = Key.isDown(decBtn);
     var incPress = Key.isDown(incBtn);
@@ -42,17 +49,23 @@ Physics._move = function (isHorizontal, player, decBtn, incBtn, capSpeed, accel)
     }
 }
 
+/* moves player along horizontal axis by accel, and caps his speed at capSpeed
+   player users leftBtn and rightBtn to decrease/increase position on horizontal axis */
 Physics.moveLeftRight = function (player, leftBtn, rightBtn, capSpeed, accel) {
     this._move(true, player, leftBtn, rightBtn, capSpeed, accel);
 }
 
+/* moves player along vertical axis by accel, and caps his speed at capSpeed
+   player users upBtn and downBtn to decrease/increase position on vertical axis */
 Physics.moveUpDown = function (player, upBtn, downBtn, capSpeed, accel) {
     this._move(false, player, upBtn, downBtn, capSpeed, accel);
 }
 
+// applies gravity to players y velocity, and if the player presses jumpBtn, he
+// will jump with jump power.
 Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower) {
 
-    if (Physics.prevJumpBtn === undefined) {
+    if (Physics.prevJumpBtn === undefined || this.autoJump) {
         Physics.prevJumpBtn = false;
     }
 
@@ -68,7 +81,7 @@ Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower) {
     Physics.prevJumpBtn = Key.isDown(jumpBtn);
 }
 
-
+// checks if a coordinate has an occupied cell in the walls map
 Physics.isWall = function(walls, cellX,cellY) {
     try {
         return walls[cellY][cellX] === 1;
@@ -90,7 +103,7 @@ Physics.inCellNoEdges = function(walls, x, y) {
 }
 
 // This tells if a point (x,y) is inside a cell, ignoring the top
-// and bottom edges
+// and bottom edges of the cell
 Physics.inCellTrimTopBottom = function(walls, x, y) {
     var inTileX = x % 1;
     var inTileY = y % 1;
@@ -105,7 +118,11 @@ Physics.inCellTrimTopBottom = function(walls, x, y) {
     var occupied2 = this.isWall(walls, tileX2, tileY);
 
     // the inTileY !== 0 part is what actually trims off the top and the bottom
-    // the rest is so that 
+    // the rest is so that it doesn't register collisions there, the only problem
+    // is that if two tiles exist vertically, it wont register a collision directly
+    // between them. So for example, if the player is 1 tile unit wide, and he's aligned
+    // precisely, he'll slide through the floor. A workaround is to add a third collision point
+    // to the player in his middle bottom.
     if (inTileX === 0) {
         return (occupied || occupied2) && inTileY !== 0;
     } else {
@@ -113,16 +130,14 @@ Physics.inCellTrimTopBottom = function(walls, x, y) {
     }
 }
 
-// This tells if a point (x,y) is inside a cell, ignoring the left and right edges
+// This tells if a point (x,y) is inside a cell, 
+// ignoring the left and right edges of the cell
 Physics.inCellTrimLeftRight = function(walls, x, y) {
     var inTileX = x % 1;
     var inTileY = y % 1;
     var tileX = Math.floor(x);
     var tileY = Math.floor(y);
     var tileY2 = Math.floor(y)-1;
-
-    // if y is at exactly n, we need to check the bottom edge of
-    // block with x=n-1 and the top edge of block with x=n
 
     var occupied = this.isWall(walls, tileX, tileY);
     var occupied2 = this.isWall(walls, tileX, tileY2);
