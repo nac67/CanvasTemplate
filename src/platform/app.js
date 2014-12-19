@@ -3,12 +3,11 @@ var app;
 init();
 
 function init () {
-    //Content.createLoader();
+    Content.createLoader();
 
     //preload assets
 
-    //Content.loadThenStart(startApp);
-    startApp();
+    Content.loadThenStart(startApp);
 }
 
 function startApp () {

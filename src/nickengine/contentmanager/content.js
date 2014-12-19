@@ -23,6 +23,7 @@ var Content = function () {
     var films = {};
     var loader;
     var percentDone = 0;
+    var loadAny = false; //loader screws up if not loading anything, so check if anything needs loading
 
     /////////////////////////////////////////
     // TO BE USED BEFORE STARTING PRELOADER
@@ -39,6 +40,7 @@ var Content = function () {
     var preloadImage = function (src){
         var bitmap = loader.addImage(src);
         images[src] = bitmap;
+        loadAny = true;
         return bitmap;
     }
 
@@ -48,18 +50,23 @@ var Content = function () {
         var bitmap = preloadImage(src);
         var film =  new Filmstrip(bitmap, width, height, frames, framesInRow);
         films[src] = film;
+        loadAny = true;
         return film;
     }
 
     /** Starts the preloader then when its finished runs callback function */
     var loadThenStart = function(callback) {
-        loader.addCompletionListener(callback);
-        loader.addProgressListener(function(e) { 
-           percentDone = e.completedCount/e.totalCount; 
-           drawPreloader(percentDone);
-        }); 
-        drawPreloader(0);
-        loader.start();
+        if (loadAny) {
+            loader.addCompletionListener(callback);
+            loader.addProgressListener(function(e) { 
+               percentDone = e.completedCount/e.totalCount; 
+               drawPreloader(percentDone);
+            }); 
+            drawPreloader(0);
+            loader.start();
+        } else {
+            callback();
+        }
     }
 
 
