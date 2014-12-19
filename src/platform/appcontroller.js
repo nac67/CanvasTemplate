@@ -2,10 +2,10 @@ var AppController = function () {
 
     // indexed [y][x]
     this.map = [[1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,1,0,0,0,0,0,0,0,0,0,1],
                 [1,0,0,0,0,0,0,0,0,0,0,1],
                 [1,0,0,0,0,0,0,0,0,0,0,1],
-                [1,0,0,0,1,0,0,0,0,0,0,1],
-                [1,0,1,1,1,0,0,0,0,0,0,1],
+                [1,0,0,0,0,0,0,0,0,0,0,1],
                 [1,0,0,0,0,0,0,1,0,0,0,1],
                 [1,0,1,0,1,1,1,1,0,0,1,1],
                 [1,1,1,1,1,1,1,1,1,1,1,1]];
@@ -74,46 +74,81 @@ AppController.prototype.inCellTrimLeftRight = function(x, y) {
 // if player is exactly a tile, he will slide in between the gaps in tiles
 // due to the way the trim methods work
 
+var butt;
+
 AppController.prototype.update = function () {
+
+    // if(!butt && Mouse.leftDown) {
+    //     var xxx = Math.floor(Mouse.x/TILE);
+    //     var yyy = Math.floor(Mouse.y/TILE);
+    //     this.map[yyy][xxx] = (this.map[yyy][xxx] === 1? 0 : 1)
+    // }
+
+    // butt = Mouse.leftDown;
+
+
     var left = Key.isDown(Key.LEFT);
     var right = Key.isDown(Key.RIGHT);
 
-    if (!left && !right || left && right) {
+    // if (!left && !right || left && right) {
 
-        // use x accel as friction, these if statements are to prevent
-        // oscillation
-        if (this.player.vx > PLAYER_XACCEL) {
-            this.player.vx -= PLAYER_XACCEL;
-        } else if (this.player.vx < -PLAYER_XACCEL) {
-            this.player.vx += PLAYER_XACCEL;
-        } else {
-            this.player.vx = 0;
-        }
-    } else if (Key.isDown(Key.LEFT)) {
-        if (this.player.vx > -PLAYER_CAP_XVEL) {
-            this.player.vx -= PLAYER_XACCEL;
-            this.player.vx = Math.max(this.player.vx, -PLAYER_CAP_XVEL) //cap
-        }
-    } else if (Key.isDown(Key.RIGHT)) {
-        if (this.player.vx < PLAYER_CAP_XVEL) {
-            this.player.vx += PLAYER_XACCEL;
-            this.player.vx = Math.min(this.player.vx, PLAYER_CAP_XVEL) //cap
-        }
-    }
+    //     // use x accel as friction, these if statements are to prevent
+    //     // oscillation
+    //     if (this.player.vx > PLAYER_XACCEL) {
+    //         this.player.vx -= PLAYER_XACCEL;
+    //     } else if (this.player.vx < -PLAYER_XACCEL) {
+    //         this.player.vx += PLAYER_XACCEL;
+    //     } else {
+    //         this.player.vx = 0;
+    //     }
+    // } else if (Key.isDown(Key.LEFT)) {
+    //     if (this.player.vx > -PLAYER_CAP_XVEL) {
+    //         this.player.vx -= PLAYER_XACCEL;
+    //         this.player.vx = Math.max(this.player.vx, -PLAYER_CAP_XVEL) //cap
+    //     }
+    // } else if (Key.isDown(Key.RIGHT)) {
+    //     if (this.player.vx < PLAYER_CAP_XVEL) {
+    //         this.player.vx += PLAYER_XACCEL;
+    //         this.player.vx = Math.min(this.player.vx, PLAYER_CAP_XVEL) //cap
+    //     }
+    // }
 
-    if(!this.player.touchBottom) {
-        this.player.vy += PLAYER_YACCEL;
-    } else {
-        if (!this.lastJump && Key.isDown(Key.UP)) {
-            this.player.vy = -PLAYER_JUMP;
-        }
-    }
+    // if(!this.player.touchBottom) {
+    //     this.player.vy += PLAYER_YACCEL;
+    // } else {
+    //     if (!this.lastJump && Key.isDown(Key.UP)) {
+    //         this.player.vy = -PLAYER_JUMP;
+    //     }
+    // }
+
+    // if (Key.isDown(Key.UP)) {
+    //     this.player.vy = -.2;
+    // } else if (Key.isDown(Key.DOWN)) {
+    //     this.player.vy = .2;
+    // } else {
+    //     this.player.vy = 0;
+    // }
+
+    // if (Key.isDown(Key.LEFT)) {
+    //     this.player.vx = -.1;
+    // } else if (Key.isDown(Key.RIGHT)) {
+    //     this.player.vx = .1
+    // } else {
+    //     this.player.vx = 0;
+    // }
+
+    this.player.vx = -.1
+    this.player.vy = -.2
 
     // note if the player width/height is exactly a multiple of the tile size
     // he'll be able to slide in between tiles because the collisoin checks
     // will be happening right at the edges of tiles.
     // a possible way to fix this is to set more collision points half way through the 
     // player for the middles.
+
+    if (Key.isDown(32)){
+        console.log("x: "+this.player.left()+" y: "+this.player.top())
+    }
 
     // Collision resolution
     if (this.player.vx > 0) {
@@ -160,15 +195,31 @@ AppController.prototype.update = function () {
 
         var wouldHitWall = this.inCellTrimLeftRight(this.player.left(), potY) || 
                         this.inCellTrimLeftRight(this.player.right(), potY)
+
+
         if (!wouldHitWall) {
             this.player.setTop(potY);
         } else {
-            this.player.setTop(Math.floor(potY)+1);
+
+            if (this.inCellTrimLeftRight(this.player.left(), potY)){
+                console.log("left");
+            } else {
+                console.log("right")
+                console.log("this potY is bad:" +potY)
+            }
+
+            if (potY%1 !== 0) {
+                this.player.setTop(Math.floor(potY)+1);
+            }else {
+                this.player.setTop(potY)
+            }
             if (PLAYER_HEAD_BUMP_BOUNCE) {
                 this.player.vy = 0;
             }
         }
     }
+    
+    
 
 
     this.player.touchLeft = this.inCellTrimTopBottom(this.player.left(), this.player.top()) || 
