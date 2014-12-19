@@ -1,6 +1,8 @@
-var Physics = {};
+var Physics = {
+    headBounce: false
+};
 
-Physics.moveLeftRight = function (player, leftBtn, rightBtn) {
+Physics.moveLeftRight = function (player, leftBtn, rightBtn, capSpeed, accel) {
     var left = Key.isDown(leftBtn);
     var right = Key.isDown(rightBtn);
 
@@ -8,27 +10,27 @@ Physics.moveLeftRight = function (player, leftBtn, rightBtn) {
 
         // use x accel as friction, these if statements are to prevent
         // oscillation
-        if (player.vx > PLAYER_XACCEL) {
-            player.vx -= PLAYER_XACCEL;
-        } else if (player.vx < -PLAYER_XACCEL) {
-            player.vx += PLAYER_XACCEL;
+        if (player.vx > accel) {
+            player.vx -= accel;
+        } else if (player.vx < -accel) {
+            player.vx += accel;
         } else {
             player.vx = 0;
         }
     } else if (left) {
-        if (player.vx > -PLAYER_CAP_XVEL) {
-            player.vx -= PLAYER_XACCEL;
-            player.vx = Math.max(player.vx, -PLAYER_CAP_XVEL) //cap
+        if (player.vx > -capSpeed) {
+            player.vx -= accel;
+            player.vx = Math.max(player.vx, -capSpeed) //cap
         }
     } else if (right) {
-        if (player.vx < PLAYER_CAP_XVEL) {
-            player.vx += PLAYER_XACCEL;
-            player.vx = Math.min(player.vx, PLAYER_CAP_XVEL) //cap
+        if (player.vx < capSpeed) {
+            player.vx += accel;
+            player.vx = Math.min(player.vx, capSpeed) //cap
         }
     }
 }
 
-Physics.moveUpDown = function (player, upBtn, downBtn) {
+Physics.moveUpDown = function (player, upBtn, downBtn, capSpeed, accel) {
     var up = Key.isDown(upBtn);
     var down = Key.isDown(downBtn);
 
@@ -36,38 +38,38 @@ Physics.moveUpDown = function (player, upBtn, downBtn) {
 
         // use x accel as friction, these if statements are to prevent
         // oscillation
-        if (player.vy > PLAYER_YACCEL) {
-            player.vy -= PLAYER_YACCEL;
-        } else if (player.vy < -PLAYER_YACCEL) {
-            player.vy += PLAYER_YACCEL;
+        if (player.vy > accel) {
+            player.vy -= accel;
+        } else if (player.vy < -accel) {
+            player.vy += accel;
         } else {
             player.vy = 0;
         }
     } else if (up) {
-        if (player.vy > -PLAYER_CAP_YVEL) {
-            player.vy -= PLAYER_YACCEL;
-            player.vy = Math.max(player.vy, -PLAYER_CAP_YVEL) //cap
+        if (player.vy > -capSpeed) {
+            player.vy -= accel;
+            player.vy = Math.max(player.vy, -capSpeed) //cap
         }
     } else if (down) {
-        if (player.vy < PLAYER_CAP_YVEL) {
-            player.vy += PLAYER_YACCEL;
-            player.vy = Math.min(player.vy, PLAYER_CAP_YVEL) //cap
+        if (player.vy < capSpeed) {
+            player.vy += accel;
+            player.vy = Math.min(player.vy, capSpeed) //cap
         }
     }
 }
 
-Physics.applyGravityAndJump = function (player, jumpBtn) {
+Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower) {
 
     if (Physics.prevJumpBtn === undefined) {
         Physics.prevJumpBtn = false;
     }
 
     if(!player.touchBottom) {
-        player.vy += PLAYER_YACCEL;
-        player.vy = Math.min(player.vy, PLAYER_CAP_YVEL);
+        player.vy += gravity;
+        player.vy = Math.min(player.vy, 1); //max out at tile size
     } else {
         if (!Physics.prevJumpBtn && Key.isDown(jumpBtn)) {
-            player.vy = -PLAYER_JUMP;
+            player.vy = -jumpPower;
         }
     }
 
@@ -151,7 +153,7 @@ Physics.inCellTrimLeftRight = function(walls, x, y) {
 // a possible way to fix this is to set more collision points half way through the 
 // player for the middles.
 
-Physics.step = function (walls, player) {
+Physics.step = function (player, walls) {
     if (player.vx > 0) {
         var potX = player.right() + player.vx; //potentialX
 
@@ -201,7 +203,7 @@ Physics.step = function (walls, player) {
             player.setTop(potY);
         } else {
             player.setTop(Math.floor(potY)+1);
-            if (PLAYER_HEAD_BUMP_BOUNCE) {
+            if (this.headBounce) {
                 player.vy = 0;
             }
         }

@@ -11,12 +11,13 @@ var AppController = function () {
                 [1,1,1,1,1,1,1,1,1,1,1,1]];
 
     this.player = new Character();
+    Physics.headBounce = PLAYER_HEAD_BUMP_BOUNCE;
 }
 
 AppController.prototype.update = function () {
-    Physics.moveLeftRight(this.player, Key.LEFT, Key.RIGHT);
-    Physics.applyGravityAndJump(this.player, Key.UP);
-    Physics.step(this.map, this.player);
+    Physics.moveLeftRight(this.player, Key.LEFT, Key.RIGHT, PLAYER_CAP_XVEL, PLAYER_XACCEL);
+    Physics.applyGravityAndJump(this.player, Key.UP, PLAYER_YACCEL, PLAYER_JUMP);
+    Physics.step(this.player, this.map);
 }
 
 AppController.prototype.draw = function () {
