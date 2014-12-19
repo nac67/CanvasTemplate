@@ -160,6 +160,20 @@ Physics.inCellTrimLeftRight = function(walls, x, y) {
 // a possible way to fix this is to set more collision points half way through the 
 // player for the middles.
 
+
+// returns the furthest right x position allowed, assuming
+// that the current x position is inside a tile.
+// right now this assumes that there is NOT another tile to the left
+// this function mostly exists because it might get more complex
+// in the future. You can also use this for the furthest down in the y direction
+Physics.farthestRight = function (x) {
+    return Math.floor(x);
+}
+
+Physics.farthestLeft = function (x) {
+    return Math.floor(x)+1;
+}
+
 Physics.step = function (player, walls) {
     if (player.vx > 0) {
         var potX = player.right() + player.vx; //potentialX
@@ -170,7 +184,7 @@ Physics.step = function (player, walls) {
             player.setRight(potX);
         } else {
             //TODO if i'm dipped in the ground, this will cause me to scoot left!
-            player.setRight(Math.floor(potX));
+            player.setRight(this.farthestRight(potX));
             player.vx = 0;
         }
     }
@@ -182,7 +196,7 @@ Physics.step = function (player, walls) {
         if (!wouldHitWall) {
             player.setLeft(potX);
         } else {
-            player.setLeft(Math.floor(potX)+1);
+            player.setLeft(this.farthestLeft(potX));
             player.vx = 0;
         }
     }
@@ -196,7 +210,7 @@ Physics.step = function (player, walls) {
         if (!wouldHitWall) {
             player.setBottom(potY);
         } else {
-            player.setBottom(Math.floor(potY));
+            player.setBottom(this.farthestRight(potY));
             player.vy = 0;
         }
     }
@@ -209,7 +223,7 @@ Physics.step = function (player, walls) {
         if (!wouldHitWall) {
             player.setTop(potY);
         } else {
-            player.setTop(Math.floor(potY)+1);
+            player.setTop(this.farthestLeft(potY));
             if (this.headBounce) {
                 player.vy = 0;
             }
