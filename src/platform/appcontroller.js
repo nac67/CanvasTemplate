@@ -4,7 +4,7 @@ var AppController = function () {
     this.map = [[1,1,1,1,1,1,1,1,1,1,1,1],
                 [1,1,0,0,0,0,0,0,0,0,0,1],
                 [1,0,0,0,0,0,0,0,0,0,0,1],
-                [1,0,0,0,0,0,0,0,0,0,0,1],
+                [1,0,1,1,1,0,0,0,0,0,0,1],
                 [1,0,0,0,0,0,0,0,0,0,0,1],
                 [1,0,0,0,0,0,0,1,0,0,0,1],
                 [1,0,1,0,1,1,1,1,0,0,1,1],
@@ -115,6 +115,7 @@ AppController.prototype.update = function () {
 
     if(!this.player.touchBottom) {
         this.player.vy += PLAYER_YACCEL;
+        this.player.vy = Math.min(this.player.vy, PLAYER_CAP_YVEL);
     } else {
         if (!this.lastJump && Key.isDown(Key.UP)) {
             this.player.vy = -PLAYER_JUMP;
@@ -127,10 +128,6 @@ AppController.prototype.update = function () {
     // will be happening right at the edges of tiles.
     // a possible way to fix this is to set more collision points half way through the 
     // player for the middles.
-
-    if (Key.isDown(32)){
-        console.log("x: "+this.player.left()+" y: "+this.player.top())
-    }
 
     // Collision resolution
     if (this.player.vx > 0) {
