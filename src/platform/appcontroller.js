@@ -22,7 +22,8 @@ AppController.prototype.isWall = function(cellX,cellY) {
     }
 }
 
-
+// This tells if a point (x,y) is inside a cell, ignoring the top
+// and bottom edges
 AppController.prototype.inCellTrimTopBottom = function(x, y) {
     var inTileX = x % 1;
     var inTileY = y % 1;
@@ -30,22 +31,31 @@ AppController.prototype.inCellTrimTopBottom = function(x, y) {
     var tileX2 = Math.floor(x)-1;
     var tileY = Math.floor(y);
 
+    // if x is at exactly n, we need to check the right edge of
+    // block with x=n-1 and the left edge of block with x=n
+
     var occupied = this.isWall(tileX, tileY);
     var occupied2 = this.isWall(tileX2, tileY);
 
+    // the inTileY !== 0 part is what actually trims off the top and the bottom
+    // the rest is so that 
     if (inTileX === 0) {
-        return (occupied || occupied2) && inTileY !== 0 ;
+        return (occupied || occupied2) && inTileY !== 0;
     } else {
         return occupied && inTileY !== 0;
     }
 }
 
+// This tells if a point (x,y) is inside a cell, ignoring the left and right edges
 AppController.prototype.inCellTrimLeftRight = function(x, y) {
     var inTileX = x % 1;
     var inTileY = y % 1;
     var tileX = Math.floor(x);
     var tileY = Math.floor(y);
     var tileY2 = Math.floor(y)-1;
+
+    // if y is at exactly n, we need to check the bottom edge of
+    // block with x=n-1 and the top edge of block with x=n
 
     var occupied = this.isWall(tileX, tileY);
     var occupied2 = this.isWall(tileX, tileY2);
@@ -57,6 +67,12 @@ AppController.prototype.inCellTrimLeftRight = function(x, y) {
     }
 }
 
+
+//current assumptions:
+// player is moving slower than a tile per frame
+// player is smaller than a tile, otherwise additional checks are needed
+// if player is exactly a tile, he will slide in between the gaps in tiles
+// due to the way the trim methods work
 
 AppController.prototype.update = function () {
     var left = Key.isDown(Key.LEFT);
@@ -88,29 +104,16 @@ AppController.prototype.update = function () {
     if(!this.player.touchBottom) {
         this.player.vy += PLAYER_YACCEL;
     } else {
-        if (Key.isDown(Key.UP)) {
+        if (!this.lastJump && Key.isDown(Key.UP)) {
             this.player.vy = -PLAYER_JUMP;
         }
     }
 
-    // var blah = .3
-    // if (Key.isDown(Key.UP)) {
-    //     this.player.vy = -blah;
-    // } else if (Key.isDown(Key.DOWN)) {
-    //     this.player.vy = blah;
-    // } else {
-    //     this.player.vy = 0;
-    // }
-
-    // if (Key.isDown(Key.LEFT)) {
-    //     this.player.vx = -blah;
-    // } else if (Key.isDown(Key.RIGHT)) {
-    //     this.player.vx = blah;
-    // } else {
-    //     this.player.vx = 0;
-    // }
-
-    //this.player.setBottom(Math.floor(6.3));
+    // note if the player width/height is exactly a multiple of the tile size
+    // he'll be able to slide in between tiles because the collisoin checks
+    // will be happening right at the edges of tiles.
+    // a possible way to fix this is to set more collision points half way through the 
+    // player for the middles.
 
     // Collision resolution
     if (this.player.vx > 0) {
@@ -141,8 +144,10 @@ AppController.prototype.update = function () {
     if (this.player.vy > 0) {
         var potY = this.player.bottom() + this.player.vy; //potentialX
 
+
         var wouldHitWall = this.inCellTrimLeftRight(this.player.left(), potY) || 
                         this.inCellTrimLeftRight(this.player.right(), potY)
+
         if (!wouldHitWall) {
             this.player.setBottom(potY);
         } else {

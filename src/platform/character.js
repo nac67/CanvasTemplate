@@ -47,16 +47,18 @@ Character.prototype.setBottom = function (y) {
 
 Character.prototype.draw = function () {
     Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE, this.height*TILE, "#238341");
+
+    var touchColor = "#c61236"; 
     if (this.touchTop) {
-        Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE, this.height*TILE/5, "#c61236");
+        Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE, this.height*TILE/5, touchColor);
     }
     if (this.touchBottom) {
-        Utils.drawRect(this.x * TILE, this.y * TILE+ this.height*TILE*(4/5), this.width*TILE, this.height*TILE/5, "#c61236");
+        Utils.drawRect(this.x * TILE, this.y * TILE+ this.height*TILE*(4/5), this.width*TILE, this.height*TILE/5, touchColor);
     }
     if (this.touchLeft) {
-        Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE/5, this.height*TILE, "#c61236");
+        Utils.drawRect(this.x * TILE, this.y * TILE, this.width*TILE/5, this.height*TILE, touchColor);
     }
     if (this.touchRight) {
-        Utils.drawRect(this.x * TILE + this.width*TILE*(4/5), this.y * TILE, this.width*TILE/5, this.height*TILE, "#c61236");
+        Utils.drawRect(this.x * TILE + this.width*TILE*(4/5), this.y * TILE, this.width*TILE/5, this.height*TILE, touchColor);
     }
 }

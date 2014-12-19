@@ -16,12 +16,10 @@ function startApp () {
     animate(); //begin self-calling animate function
 }
 
-
-
 function animate() {
     app.update();
     app.draw();
-  
+
     // request new frame
     requestAnimFrame(function() {
         animate();
