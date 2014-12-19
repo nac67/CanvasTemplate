@@ -2,60 +2,52 @@ var Physics = {
     headBounce: false
 };
 
-Physics.moveLeftRight = function (player, leftBtn, rightBtn, capSpeed, accel) {
-    var left = Key.isDown(leftBtn);
-    var right = Key.isDown(rightBtn);
+Physics._move = function (isHorizontal, player, decBtn, incBtn, capSpeed, accel) {
+    var decPress = Key.isDown(decBtn);
+    var incPress = Key.isDown(incBtn);
 
-    if (!left && !right || left && right) {
+    // getters and setters for X/Y velocity
+    var get = function () {
+        return (isHorizontal ? player.vx : player.vy);
+    }
 
+    var set = function (val) {
+        if (isHorizontal) {
+            player.vx = val;
+        } else {
+            player.vy = val;
+        }
+    }
+
+    if (!decPress && !incPress || decPress && incPress) {
         // use x accel as friction, these if statements are to prevent
         // oscillation
-        if (player.vx > accel) {
-            player.vx -= accel;
-        } else if (player.vx < -accel) {
-            player.vx += accel;
+        if (get() > accel) {
+            set(get() - accel);
+        } else if (get() < -accel) {
+            set(get() + accel);
         } else {
-            player.vx = 0;
+            set(0);
         }
-    } else if (left) {
-        if (player.vx > -capSpeed) {
-            player.vx -= accel;
-            player.vx = Math.max(player.vx, -capSpeed) //cap
+    } else if (decPress) {
+        if (get() > -capSpeed) {
+            set(get() - accel);
+            set(Math.max(get(), -capSpeed)) //cap
         }
-    } else if (right) {
-        if (player.vx < capSpeed) {
-            player.vx += accel;
-            player.vx = Math.min(player.vx, capSpeed) //cap
+    } else if (incPress) {
+        if (get() < capSpeed) {
+            set(get() + accel);
+            set(Math.min(get(), capSpeed)) //cap
         }
     }
 }
 
+Physics.moveLeftRight = function (player, leftBtn, rightBtn, capSpeed, accel) {
+    this._move(true, player, leftBtn, rightBtn, capSpeed, accel);
+}
+
 Physics.moveUpDown = function (player, upBtn, downBtn, capSpeed, accel) {
-    var up = Key.isDown(upBtn);
-    var down = Key.isDown(downBtn);
-
-    if (!up && !down || up && down) {
-
-        // use x accel as friction, these if statements are to prevent
-        // oscillation
-        if (player.vy > accel) {
-            player.vy -= accel;
-        } else if (player.vy < -accel) {
-            player.vy += accel;
-        } else {
-            player.vy = 0;
-        }
-    } else if (up) {
-        if (player.vy > -capSpeed) {
-            player.vy -= accel;
-            player.vy = Math.max(player.vy, -capSpeed) //cap
-        }
-    } else if (down) {
-        if (player.vy < capSpeed) {
-            player.vy += accel;
-            player.vy = Math.min(player.vy, capSpeed) //cap
-        }
-    }
+    this._move(false, player, upBtn, downBtn, capSpeed, accel);
 }
 
 Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower) {
