@@ -156,7 +156,12 @@ function arrayToText (arry) {
         }
         
         for (var j=0;j<arry[i].length;j++) {
-            result += toStringElem(arry[i][j]) + ",";
+            if (j == 0) {
+                result += toStringElem(arry[i][j]);
+            } else {
+                result += ","+toStringElem(arry[i][j]);
+            }
+            
         }
 
         if (i != arry.length-1) {
