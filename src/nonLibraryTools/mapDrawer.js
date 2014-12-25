@@ -1,7 +1,6 @@
 var app;
 
-// still left TODO
-// * Make bounds of map more obvious
+// still left TODO]
 // * Make way to navigate around if map is very large
 // * read in a map
 
