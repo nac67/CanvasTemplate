@@ -1,6 +1,9 @@
 var app;
+
+// CONSTANTS
 var TILE = 20;
 
+// HTML JUNK
 var _shiftLeft = document.getElementById('shiftLeft');
 var _shiftRight = document.getElementById('shiftRight');
 var _shiftUp = document.getElementById('shiftUp');
@@ -15,6 +18,10 @@ var _readCode = document.getElementById('readCode');
 var _updateColors = document.getElementById('updateColors');
 var _codeArea = document.getElementById('codeArea');
 var _colorArea = document.getElementById('colorArea');
+
+// INITIAL SETUP
+_colorArea.value = "0 #FFFFFF\n1 #000000";
+_type.value = "1";
 
 var AppController = function () {
 
