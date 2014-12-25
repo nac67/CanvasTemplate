@@ -46,5 +46,21 @@ var Utils = {
 
     drawEllipseByCenter: function(ctx, cx, cy, w, h) {
         this.drawEllipse(ctx, cx - w/2.0, cy - h/2.0, w, h);
-    }
+    },
+
+    drawHorizontalLine: function (x, y1, y2, col) {
+        context.strokeStyle = col;
+        context.beginPath();
+        context.moveTo(x+.5,y1);
+        context.lineTo(x+.5,y2);
+        context.stroke();
+    },
+
+    drawVerticalLine: function (x1, x2, y, col) {
+        context.strokeStyle = col;
+        context.beginPath();
+        context.moveTo(x1,y+.5);
+        context.lineTo(x2,y+.5);
+        context.stroke();
+    },
 };
