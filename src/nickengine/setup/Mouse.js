@@ -18,6 +18,7 @@ var Mouse = (function () {
     var y = 0;
 
     function mouseDown (event){
+
         Mouse.leftDown = true;
 
         if(event.targetTouches){

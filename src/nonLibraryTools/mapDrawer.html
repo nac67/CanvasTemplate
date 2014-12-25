@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+
+<head>
+<style type="text/css">
+    body {
+        background-color:#eeeeee;
+    }
+
+    div {
+        margin-left: auto;
+        margin-right: auto;
+        width: 1000px;
+        font-family: sans-serif;
+    }
+
+    td {
+        vertical-align: top;
+    }
+</style>
+</head>
+
+<body>
+  <div>
+    <table width="1000" id="table">
+        <tr id="tr">
+            <td id="td">
+                <canvas id="myCanvas" width="800" height="600">
+                    Your browser does not support the CANVAS element.
+                    Try the latest Firefox, Google Chrome, Safari or Opera.
+                </canvas>
+            </td>
+            <td width="200">
+                 <button type="button" style="width:100px;" id="shiftLeft">Shift Left</button> <br />
+                 <button type="button" style="width:100px;" id="shiftRight">Shift Right</button> <br />
+                 <button type="button" style="width:100px;" id="shiftUp">Shift Up</button> <br />
+                 <button type="button" style="width:100px;" id="shiftDown">Shift Down</button> <br /> 
+                 <input type="checkbox" id="2dindexing" value="2dindexing">[y][x] Indexed?<br><br /> <br />
+
+                 <input type="text" style="width:35px;" id="widthInput"> 
+                 <button type="button" id="setSize">Set Size</button><br />
+                 <input type="text" style="width:35px;" id="heightInput"> <br /> <br />
+
+
+                 Type: <br />
+                 <input type="text" id="type"> <br /> <br />
+                 <button type="button" style="width:100px;" id="updateColors">Update Colors</button><br />
+                 <textarea style="max-height:300px;min-height:300px; resize: none" id="colorArea"></textarea> 
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button type="button" style="width:100px;" id="printCode">Print code</button>
+                <button type="button" style="width:100px;" id="readCode">Read code</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <textarea cols="110" style="max-height:400px;min-height:400px; resize: none" id="codeArea"></textarea>
+            </td>
+        </tr>
+    </table>
+
+    
+
+    
+    
+
+    <script src="../nickengine/setup/setup.js"></script>
+    <script src="../nickengine/setup/Key.js"></script>
+    <script src="../nickengine/setup/Mouse.js"></script>
+    <script src="../nickengine/utils.js"></script>
+    <script src="mapDrawer.js"></script>
+  </div>
+</body>
+
+</html>
