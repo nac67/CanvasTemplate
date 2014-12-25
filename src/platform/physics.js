@@ -234,14 +234,14 @@ Physics.step = function (player, walls) {
 
 
     player.touchLeft = this.inCellTrimTopBottom(walls, player.left(), player.top()) || 
-                this.inCellTrimTopBottom(walls, player.left(), player.bottom())
+                       this.inCellTrimTopBottom(walls, player.left(), player.bottom())
 
     player.touchRight = this.inCellTrimTopBottom(walls, player.right(), player.top()) || 
-                this.inCellTrimTopBottom(walls, player.right(), player.bottom())
+                        this.inCellTrimTopBottom(walls, player.right(), player.bottom())
 
     player.touchTop = this.inCellTrimLeftRight(walls, player.left(), player.top()) || 
-                this.inCellTrimLeftRight(walls, player.right(), player.top())
+                      this.inCellTrimLeftRight(walls, player.right(), player.top())
 
     player.touchBottom = this.inCellTrimLeftRight(walls, player.left(), player.bottom()) || 
-                this.inCellTrimLeftRight(walls, player.right(), player.bottom())
+                         this.inCellTrimLeftRight(walls, player.right(), player.bottom())
 }
