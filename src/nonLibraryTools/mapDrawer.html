@@ -36,15 +36,18 @@
                  <button type="button" style="width:100px;" id="shiftLeft">Shift Left</button> <br />
                  <button type="button" style="width:100px;" id="shiftRight">Shift Right</button> <br />
                  <button type="button" style="width:100px;" id="shiftUp">Shift Up</button> <br />
-                 <button type="button" style="width:100px;" id="shiftDown">Shift Down</button> <br /> <br />
+                 <button type="button" style="width:100px;" id="shiftDown">Shift Down</button> <br /> 
+                 <input type="checkbox" id="2dindexing" value="2dindexing">[y][x] Indexed?<br><br /> <br />
 
                  <input type="text" style="width:35px;" id="widthInput"> 
-                 <button type="button" id="setWidth">Set Width</button><br />
-                 <input type="text" style="width:35px;" id="heightInput"> 
-                 <button type="button" id="setHeight">Set Height</button><br /><br />
+                 <button type="button" id="setSize">Set Size</button><br />
+                 <input type="text" style="width:35px;" id="heightInput"> <br /> <br />
+
 
                  Type: <br />
-                 <input type="text" id="type"> 
+                 <input type="text" id="type"> <br /> <br />
+                 <button type="button" style="width:100px;" id="updateColors">Update Colors</button><br />
+                 <textarea style="max-height:300px;min-height:300px; resize: none" id="colorArea"></textarea> 
             </td>
         </tr>
         <tr>
@@ -52,16 +55,10 @@
                 <button type="button" style="width:100px;" id="printCode">Print code</button>
                 <button type="button" style="width:100px;" id="readCode">Read code</button>
             </td>
-            <td>
-                <button type="button" style="width:100px;" id="updateColors">Update Colors</button>
-            </td>
         </tr>
         <tr>
             <td>
                 <textarea cols="110" style="max-height:400px;min-height:400px; resize: none" id="codeArea"></textarea>
-            </td>
-            <td>
-                <textarea style="max-height:400px;min-height:400px; resize: none" id="colorArea"></textarea>
             </td>
         </tr>
     </table>
