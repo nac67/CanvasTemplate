@@ -83,8 +83,12 @@ function getRectangle(start, end) {
 function drawSelectangle(start, end) {
     var rectangle = getRectangle(start, end);
 
-    context.strokeStyle = "rgb(118,14,131)";
-    context.fillStyle = "rgba(118,14,131,.3)";
+    var rawColor = app.colorMappings[getType()];
+
+    if (rawColor === undefined) rawColor = "#FF00FF";
+
+    context.strokeStyle = "rgb("+hexToR(rawColor)+","+hexToG(rawColor)+","+hexToB(rawColor)+")";
+    context.fillStyle = "rgba("+hexToR(rawColor)+","+hexToG(rawColor)+","+hexToB(rawColor)+",.3)";
     context.beginPath();
 
     var width = rectangle[2]-rectangle[0]+1;
@@ -206,6 +210,12 @@ function transpose (a) {
   return t;
 };
 
+// http://www.javascripter.net/faq/hextorgb.htm
+function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+
 // APP LOGIC
 
 var AppController = function () {
@@ -243,17 +253,19 @@ AppController.prototype.draw = function () {
     for (var i = 0; i < this.gameMap.length; i++) {
         for (var j = 0; j < this.gameMap[i].length; j++) {
             var elem = this.gameMap[i][j];
-            context.fillStyle = this.colorMappings[elem];
+            var rawColor = this.colorMappings[elem];
+            if (rawColor === undefined) rawColor = "#FF00FF";
+            context.fillStyle = rawColor;
             context.fillRect(j*TILE,i*TILE,TILE,TILE);
         }
     }
 
     // Draw background lines
-    for (var x = 0; x < 800; x += TILE) {
-        Utils.drawHorizontalLine(x, 0, 600, "#CCCCCC");
+    for (var x = 0; x < this.gameMap[0].length * TILE; x += TILE) {
+        Utils.drawHorizontalLine(x, 0, this.gameMap.length * TILE, "#CCCCCC");
     }
-    for (var y = 0; y < 800; y += TILE) {
-        Utils.drawVerticalLine(0, 800, y, "#CCCCCC");
+    for (var y = 0; y < this.gameMap.length * TILE; y += TILE) {
+        Utils.drawVerticalLine(0, this.gameMap[0].length * TILE, y, "#CCCCCC");
     }
 
     if (Mouse.leftDown) {
