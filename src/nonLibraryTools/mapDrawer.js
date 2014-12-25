@@ -1,5 +1,10 @@
 var app;
 
+// still left TODO
+// * Make bounds of map more obvious
+// * Make way to navigate around if map is very large
+// * read in a map
+
 // CONSTANTS
 var TILE = 20;
 
@@ -100,17 +105,6 @@ function drawSelectangle(start, end) {
     context.stroke();
 }
 
-function create2DArray(rows, cols) {
-    var result = [];
-    for (var i=0; i<rows; i++) {
-        result.push([]);
-        for (var j=0; j<cols; j++) {
-            result[i].push(0);
-        }
-    }
-     return result;
-}
-
 function copyArrayIntoDifferentSize (oldArray, newRows, newCols) {
     var result = [];
     for (var i=0; i<newRows; i++) {
@@ -126,6 +120,86 @@ function copyArrayIntoDifferentSize (oldArray, newRows, newCols) {
     return result;
 }
 
+function rotateElements (arry, forwards) {
+    if (forwards) {
+        var prevElem = arry[arry.length-1];
+        for (var i=0; i<arry.length; i++) {
+            var temp = arry[i];
+            arry[i] = prevElem;
+            prevElem = temp;
+        }
+    } else {
+        var prevElem = arry[0];
+        for (var i=arry.length-1; i>=0; i--) {
+            var temp = arry[i];
+            arry[i] = prevElem;
+            prevElem = temp;
+        }
+    }
+}
+
+function toStringElem(elem) {
+    if (typeof elem == 'number') {
+        return elem;
+    } else {
+        return "\""+elem+"\"";
+    }
+}
+
+function arrayToText (arry) {
+    var result = "var map =   ";
+    for (var i=0;i<arry.length;i++) {
+        if (i == 0) {
+            result += "[[";
+        }else {
+            result += "             ["
+        }
+        
+        for (var j=0;j<arry[i].length;j++) {
+            result += toStringElem(arry[i][j]) + ",";
+        }
+
+        if (i != arry.length-1) {
+            result += "],\n";
+        } else {
+            result += "]];"
+        }
+    }
+    return result;
+}
+
+function transpose (a) {
+
+  // Calculate the width and height of the Array
+  var w = a.length ? a.length : 0,
+    h = a[0] instanceof Array ? a[0].length : 0;
+
+  // In case it is a zero matrix, no transpose routine needed.
+  if(h === 0 || w === 0) { return []; }
+
+  /**
+   * @var {Number} i Counter
+   * @var {Number} j Counter
+   * @var {Array} t Transposed data is stored in this array.
+   */
+  var i, j, t = [];
+
+  // Loop through every item in the outer array (height)
+  for(i=0; i<h; i++) {
+
+    // Insert a new row (array)
+    t[i] = [];
+
+    // Loop through every item per item in outer array (width)
+    for(j=0; j<w; j++) {
+
+      // Save transposed data.
+      t[i][j] = a[j][i];
+    }
+  }
+
+  return t;
+};
 
 // APP LOGIC
 
@@ -135,7 +209,8 @@ var AppController = function () {
     this.endDrag = [0,0];
     this.colorMappings = {};
     this.updateColorMappings();
-    this.gameMap = create2DArray(getHeight(), getWidth());
+    this.gameMap = [[0]];
+    this.gameMap = copyArrayIntoDifferentSize(this.gameMap, getHeight(), getWidth());
 }
 
 AppController.prototype.update = function () {
@@ -159,7 +234,6 @@ AppController.prototype.update = function () {
 }
 
 AppController.prototype.draw = function () {
-    console.log("width: "+this.gameMap[0].length+" height: "+this.gameMap.length);
 
     for (var i = 0; i < this.gameMap.length; i++) {
         for (var j = 0; j < this.gameMap[i].length; j++) {
@@ -210,6 +284,33 @@ _setSize.onclick = function () {
     app.gameMap = copyArrayIntoDifferentSize(app.gameMap, getHeight(), getWidth());
 }
 
+_shiftUp.onclick = function () {
+    rotateElements(app.gameMap, false);
+}
+
+_shiftDown.onclick = function () {
+    rotateElements(app.gameMap, true);
+}
+
+_shiftLeft.onclick = function () {
+    for (var i=0; i<app.gameMap.length; i++) {
+        rotateElements(app.gameMap[i], false);
+    }
+}
+
+_shiftRight.onclick = function () {
+    for (var i=0; i<app.gameMap.length; i++) {
+        rotateElements(app.gameMap[i], true);
+    }
+}
+
+_printCode.onclick = function () {
+    if (_2dindexing.checked) {
+        _codeArea.value = arrayToText(app.gameMap);
+    } else {
+        _codeArea.value = arrayToText(transpose(app.gameMap));
+    }
+}
 
 
 startApp();
