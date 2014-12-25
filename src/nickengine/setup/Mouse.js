@@ -18,6 +18,7 @@ var Mouse = (function () {
     var y = 0;
 
     function mouseDown (event){
+
         Mouse.leftDown = true;
 
         if(event.targetTouches){
@@ -38,6 +39,7 @@ var Mouse = (function () {
 
         Mouse.x -= canvas.offsetLeft;
         Mouse.y -= canvas.offsetTop;
+        event.preventDefault(); // prevent I-beam cursor
     }
 
     //TODO cache offset
