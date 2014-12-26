@@ -20,7 +20,7 @@ var AppController = function () {
 
     Physics.headBounce = PLAYER_HEAD_BUMP_BOUNCE;
     Physics.wallJumpLock = PLAYER_WALL_JUMP_LOCK;
-    Physics.requireLRWallJump = true;
+    Physics.requireLRWallJump = false;
     Physics.stickyWalls = true;
     Physics.stickySpeed = .05;
 }

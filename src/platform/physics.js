@@ -23,6 +23,14 @@ var Physics = {
     stickyWalls: false,
     stickySpeed: 0,
 
+    // Combinations of requireLRWallJump and stickyWalls:
+    //   requireLR  |  sticky  |
+    //---------------------------------------------
+    //       false  |   false  | you freely slide on walls and can jump if touching them 
+    //       false  |    true  | you jump if touching walls, and if you press into them you slide slowly
+    //        true  |   false  | you need to press into walls to wall jump, no slow slide
+    //        true  |    true  | You need to press into walls to wall jump and slide slowly
+
 
 };
 
@@ -129,7 +137,12 @@ Physics.wallJump = function (player, jumpBtn, jumpYPower, jumpXPower, leftBtn, r
         }
 
         if (player.touchRight && (!this.requireLRWallJump || Key.isDown(rightBtn))) {
-            player.wallPress = true;
+            if (Key.isDown(rightBtn)) {
+                // you always need to press into the wall to slow slide,
+                // regardless of whether you need to press into the wall
+                // to wall jump
+                player.wallPress = true;
+            }
             if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
                 player.vy = -jumpYPower;
                 player.vx = -jumpXPower;
@@ -138,7 +151,9 @@ Physics.wallJump = function (player, jumpBtn, jumpYPower, jumpXPower, leftBtn, r
             }
         }
         if (player.touchLeft && (!this.requireLRWallJump || Key.isDown(leftBtn))) {
-            player.wallPress = true;
+            if (Key.isDown(leftBtn)) {
+                player.wallPress = true;
+            }
             if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
                 player.vy = -jumpYPower;
                 player.vx = jumpXPower;
