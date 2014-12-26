@@ -31,8 +31,9 @@ var Physics = {
     //        true  |   false  | you need to press into walls to wall jump, no slow slide
     //        true  |    true  | You need to press into walls to wall jump and slide slowly
 
-    // one final option, if 
-    autoStick: true,
+    // one final option, this will make it so that if you're touching the wall, and not
+    // pressing into it, you will stick anyway.
+    autoStick: false,
 
 
 };
