@@ -21,8 +21,6 @@ var Physics = {
     stickyWalls: false,
     stickySpeed: 0,
 
-    wallPress: false,
-
 
 };
 
@@ -88,14 +86,14 @@ Physics.moveUpDown = function (player, upBtn, downBtn, capSpeed, accel) {
 
 // applies gravity to players y velocity, and if the player presses jumpBtn, he
 // will jump with jump power.
-Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower) {
+Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower, stickyWalls) {
 
     if (Physics.prevJumpBtn === undefined || this.autoJump) {
         Physics.prevJumpBtn = false;
     }
 
     if(!player.touchBottom) {
-        if (this.stickyWalls && this.wallPress) {
+        if (this.stickyWalls && player.wallPress) {
             player.vy += gravity;
             player.vy = Math.min(player.vy, this.stickySpeed);
         } else {
@@ -111,29 +109,35 @@ Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower) {
     Physics.prevJumpBtn = Key.isDown(jumpBtn);
 }
 
+// allows player to walljump. The player will press jumpBtn and move with the given powers,
+// if the player is pressing left or right, they will be pressed against the wall. If you
+// have sticky walls on, this will affect whether they slow down when pressed. Also
+// if requireLRWallJump is on, they need to be pressed against the wall to wall jump, not just
+// touching it. For example to walljump off a wall to the right, you would need to be holding right
+// and press jump, as opposed to just pressing jump while touching it.
 Physics.wallJump = function (player, jumpBtn, jumpYPower, jumpXPower, leftBtn, rightBtn) {
-    this.wallPress = false;
+    player.wallPress = false;
     if (!player.touchBottom) {
         if (Physics.prevJumpBtnWall === undefined || this.autoJump) {
             Physics.prevJumpBtnWall = false;
         }
 
         if (player.touchRight && (!this.requireLRWallJump || Key.isDown(rightBtn))) {
-            this.wallPress = true;
+            player.wallPress = true;
             if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
                 player.vy = -jumpYPower;
                 player.vx = -jumpXPower;
                 this.wallJumpTimer = 0;
-                this.wallPress = false;
+                player.wallPress = false;
             }
         }
         if (player.touchLeft && (!this.requireLRWallJump || Key.isDown(leftBtn))) {
-            this.wallPress = true;
+            player.wallPress = true;
             if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
                 player.vy = -jumpYPower;
                 player.vx = jumpXPower;
                 this.wallJumpTimer = 0;
-                this.wallPress = false;
+                player.wallPress = false;
             }
         }
     }
