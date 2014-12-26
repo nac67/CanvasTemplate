@@ -4,13 +4,13 @@ var AppController = function () {
     this.map =   [[1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
                  [1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
                  [1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1],
-                 [1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,1],
-                 [1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,1],
-                 [1,1,1,1,0,0,1,1,0,0,0,0,1,0,0,1],
-                 [1,1,1,1,0,0,1,1,1,0,0,0,1,0,0,1],
-                 [1,1,1,1,0,0,1,1,1,1,0,0,1,0,0,1],
-                 [0,0,0,0,0,0,1,1,1,1,0,0,1,0,0,1],
-                 [0,0,0,0,0,0,1,1,1,1,0,0,1,0,0,1],
+                 [1,1,1,1,0,0,0,0,0,0,0,1,0,0,0,1],
+                 [1,1,1,1,0,0,0,0,0,0,0,1,0,0,0,1],
+                 [1,1,1,1,0,0,1,1,0,0,0,1,0,0,0,1],
+                 [1,1,1,1,0,0,1,1,1,0,0,1,0,0,0,1],
+                 [1,1,1,1,0,0,1,1,1,1,0,1,0,0,0,1],
+                 [0,0,0,0,0,0,1,1,1,1,0,1,0,0,0,1],
+                 [0,0,0,0,0,0,1,1,1,1,0,1,0,0,0,1],
                  [0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,1],
                  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]];
 
@@ -20,13 +20,15 @@ var AppController = function () {
 
     Physics.headBounce = PLAYER_HEAD_BUMP_BOUNCE;
     Physics.wallJumpLock = PLAYER_WALL_JUMP_LOCK;
-    Physics.requireLRWallJump = false;
+    Physics.requireLRWallJump = true;
+    Physics.stickyWalls = true;
+    Physics.stickySpeed = .05;
 }
 
 AppController.prototype.update = function () {
     Physics.moveLeftRight(this.player, Key.LEFT, Key.RIGHT, PLAYER_CAP_XVEL, PLAYER_XACCEL);
-    Physics.wallJump(this.player, Key.UP, PLAYER_JUMP, PLAYER_WALL_JUMP_XPOWER, Key.LEFT, Key.RIGHT);
     Physics.applyGravityAndJump(this.player, Key.UP, PLAYER_YACCEL, PLAYER_JUMP);
+    Physics.wallJump(this.player, Key.UP, PLAYER_JUMP, PLAYER_WALL_JUMP_XPOWER, Key.LEFT, Key.RIGHT);
     
     Physics.step(this.player, this.map);
 }

@@ -1,17 +1,29 @@
 var Physics = {
+    // User configurable!
     // will bounce head on ceiling if true, otherwise will 
     // slide on ceiling until y velocity is depleted
     headBounce: false,
 
-    //can hold jump to repeatedly jump
+    // User Configurable! can hold jump to repeatedly jump
     autoJump: false, 
 
+    // User Configurable: wallJumpLock
     wallJumpLock: 30,
     wallJumpTimer: this.wallJumpLock,
 
-    //to wall jump, should player need to press jump and push into
+    // User configurable!
+    // to wall jump, should player need to press jump and push into
     // wall with Left/Right at the same time? Or just press jump while touching wall
     requireLRWallJump: false, 
+
+    // User configurable!
+    // when holding arrow into wall, you will stick there
+    stickyWalls: false,
+    stickySpeed: 0,
+
+    wallPress: false,
+
+
 };
 
 /* moves player along isHorizontal axis by accel, and caps his speed at capSpeed
@@ -83,8 +95,13 @@ Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower) {
     }
 
     if(!player.touchBottom) {
-        player.vy += gravity;
-        player.vy = Math.min(player.vy, 1); //max out at tile size
+        if (this.stickyWalls && this.wallPress) {
+            player.vy += gravity;
+            player.vy = Math.min(player.vy, this.stickySpeed);
+        } else {
+            player.vy += gravity;
+            player.vy = Math.min(player.vy, 1); //max out at tile size
+        }
     } else {
         if (!Physics.prevJumpBtn && Key.isDown(jumpBtn)) {
             player.vy = -jumpPower;
@@ -95,23 +112,28 @@ Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower) {
 }
 
 Physics.wallJump = function (player, jumpBtn, jumpYPower, jumpXPower, leftBtn, rightBtn) {
+    this.wallPress = false;
     if (!player.touchBottom) {
         if (Physics.prevJumpBtnWall === undefined || this.autoJump) {
             Physics.prevJumpBtnWall = false;
         }
 
         if (player.touchRight && (!this.requireLRWallJump || Key.isDown(rightBtn))) {
+            this.wallPress = true;
             if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
                 player.vy = -jumpYPower;
                 player.vx = -jumpXPower;
                 this.wallJumpTimer = 0;
+                this.wallPress = false;
             }
         }
         if (player.touchLeft && (!this.requireLRWallJump || Key.isDown(leftBtn))) {
+            this.wallPress = true;
             if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
                 player.vy = -jumpYPower;
                 player.vx = jumpXPower;
                 this.wallJumpTimer = 0;
+                this.wallPress = false;
             }
         }
     }
