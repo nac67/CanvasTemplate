@@ -7,9 +7,10 @@ var Physics = {
     // User Configurable! can hold jump to repeatedly jump
     autoJump: false, 
 
-    // User Configurable: wallJumpLock
-    wallJumpLock: 30,
-    wallJumpTimer: this.wallJumpLock,
+    // User Configurable: how long after wall jumping should we freeze the controls
+    // to prevent player from repeatedly jumping off of one wall instead of two. Set
+    // to 0 if you desire that behavior.
+    wallJumpLock: 20,
 
     // User configurable!
     // to wall jump, should player need to press jump and push into
@@ -17,7 +18,8 @@ var Physics = {
     requireLRWallJump: false, 
 
     // User configurable!
-    // when holding arrow into wall, you will stick there
+    // when holding arrow into wall, you will stick there, and slide at stickySpeed
+    // if you want to stick there and not move, make stickySpeed 0
     stickyWalls: false,
     stickySpeed: 0,
 
@@ -71,10 +73,14 @@ Physics._move = function (isHorizontal, player, decBtn, incBtn, capSpeed, accel)
 Physics.moveLeftRight = function (player, leftBtn, rightBtn, capSpeed, accel) {
     // If just walljumped, move at constant speed and don't allow player control for a while
     // If you're not using walljumping at all, this condition will always be false so just ignore it
-    if (this.wallJumpTimer < this.wallJumpLock) {
-        this.wallJumpTimer++;
+    if (player.wallJumpTimer === undefined) {
+        player.wallJumpTimer = this.wallJumpLock;
+    }
+    if (player.wallJumpTimer < this.wallJumpLock) {
+        player.wallJumpTimer++;
         return;
     }
+
     this._move(true, player, leftBtn, rightBtn, capSpeed, accel);
 }
 
@@ -127,7 +133,7 @@ Physics.wallJump = function (player, jumpBtn, jumpYPower, jumpXPower, leftBtn, r
             if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
                 player.vy = -jumpYPower;
                 player.vx = -jumpXPower;
-                this.wallJumpTimer = 0;
+                player.wallJumpTimer = 0;
                 player.wallPress = false;
             }
         }
@@ -136,7 +142,7 @@ Physics.wallJump = function (player, jumpBtn, jumpYPower, jumpXPower, leftBtn, r
             if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
                 player.vy = -jumpYPower;
                 player.vx = jumpXPower;
-                this.wallJumpTimer = 0;
+                player.wallJumpTimer = 0;
                 player.wallPress = false;
             }
         }
