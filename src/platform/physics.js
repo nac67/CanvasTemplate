@@ -5,6 +5,13 @@ var Physics = {
 
     //can hold jump to repeatedly jump
     autoJump: false, 
+
+    wallJumpLock: 30,
+    wallJumpTimer: this.wallJumpLock,
+
+    //to wall jump, should player need to press jump and push into
+    // wall with Left/Right at the same time? Or just press jump while touching wall
+    requireLRWallJump: false, 
 };
 
 /* moves player along isHorizontal axis by accel, and caps his speed at capSpeed
@@ -52,6 +59,12 @@ Physics._move = function (isHorizontal, player, decBtn, incBtn, capSpeed, accel)
 /* moves player along horizontal axis by accel, and caps his speed at capSpeed
    player users leftBtn and rightBtn to decrease/increase position on horizontal axis */
 Physics.moveLeftRight = function (player, leftBtn, rightBtn, capSpeed, accel) {
+    // If just walljumped, move at constant speed and don't allow player control for a while
+    // If you're not using walljumping at all, this condition will always be false so just ignore it
+    if (this.wallJumpTimer < this.wallJumpLock) {
+        this.wallJumpTimer++;
+        return;
+    }
     this._move(true, player, leftBtn, rightBtn, capSpeed, accel);
 }
 
@@ -79,6 +92,30 @@ Physics.applyGravityAndJump = function (player, jumpBtn, gravity, jumpPower) {
     }
 
     Physics.prevJumpBtn = Key.isDown(jumpBtn);
+}
+
+Physics.wallJump = function (player, jumpBtn, jumpYPower, jumpXPower, leftBtn, rightBtn) {
+    if (!player.touchBottom) {
+        if (Physics.prevJumpBtnWall === undefined || this.autoJump) {
+            Physics.prevJumpBtnWall = false;
+        }
+
+        if (player.touchRight && (!this.requireLRWallJump || Key.isDown(rightBtn))) {
+            if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
+                player.vy = -jumpYPower;
+                player.vx = -jumpXPower;
+                this.wallJumpTimer = 0;
+            }
+        }
+        if (player.touchLeft && (!this.requireLRWallJump || Key.isDown(leftBtn))) {
+            if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
+                player.vy = -jumpYPower;
+                player.vx = jumpXPower;
+                this.wallJumpTimer = 0;
+            }
+        }
+    }
+    Physics.prevJumpBtnWall = Key.isDown(jumpBtn);
 }
 
 // checks if a coordinate has an occupied cell in the walls map
