@@ -22,7 +22,7 @@ var AppController = function () {
     Physics.wallJumpLock = PLAYER_WALL_JUMP_LOCK;
     Physics.requireLRWallJump = false;
     Physics.stickyWalls = true;
-    Physics.stickySpeed = .05;
+    Physics.stickySpeed = .03;
 }
 
 AppController.prototype.update = function () {

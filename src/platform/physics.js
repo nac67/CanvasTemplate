@@ -31,6 +31,9 @@ var Physics = {
     //        true  |   false  | you need to press into walls to wall jump, no slow slide
     //        true  |    true  | You need to press into walls to wall jump and slide slowly
 
+    // one final option, if 
+    autoStick: true,
+
 
 };
 
@@ -137,7 +140,7 @@ Physics.wallJump = function (player, jumpBtn, jumpYPower, jumpXPower, leftBtn, r
         }
 
         if (player.touchRight && (!this.requireLRWallJump || Key.isDown(rightBtn))) {
-            if (Key.isDown(rightBtn)) {
+            if (Key.isDown(rightBtn) || this.autoStick) {
                 // you always need to press into the wall to slow slide,
                 // regardless of whether you need to press into the wall
                 // to wall jump
@@ -151,7 +154,7 @@ Physics.wallJump = function (player, jumpBtn, jumpYPower, jumpXPower, leftBtn, r
             }
         }
         if (player.touchLeft && (!this.requireLRWallJump || Key.isDown(leftBtn))) {
-            if (Key.isDown(leftBtn)) {
+            if (Key.isDown(leftBtn) || this.autoStick) {
                 player.wallPress = true;
             }
             if (!Physics.prevJumpBtnWall && Key.isDown(jumpBtn)) {
